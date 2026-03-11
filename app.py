@@ -106,21 +106,16 @@ def login():
 def dashboard():
     if 'user' not in session:
         return redirect('/login')
-    
-    # IMPROVED: Using Query with GSI instead of Scan
-    # Requires a GSI named 'email-index' on the Bookings table
-    try:
-        response = bookings_table.query(
-            IndexName='email-index',
-            KeyConditionExpression=Key('email').eq(session['user'])
-        )
-        bookings = response.get('Items', [])
-    except Exception as e:
-        print(f"Query Error: {e}. Falling back to scan (Not recommended for prod)")
-        response = bookings_table.scan(FilterExpression=Key('email').eq(session['user']))
-        bookings = response.get('Items', [])
-    
-    return render_template("dashboard.html", name=session.get('name', 'User'), bookings=bookings)
+
+    response = bookings_table.scan()
+    bookings = response.get('Items', [])
+
+    user_bookings = []
+    for b in bookings:
+        if b.get('email') == session['user']:
+            user_bookings.append(b)
+
+    return render_template("dashboard.html", name=session.get('name', 'User'), bookings=user_bookings)
 
 @app.route('/bus')
 def bus(): return render_template("bus.html", buses=bus_data)
@@ -195,6 +190,7 @@ def logout():
 if __name__ == '__main__':
     # Running on 0.0.0.0 for EC2 access, but debug is OFF for safety
     app.run(host='0.0.0.0', port=5000, debug=True)
+
 
 
 
