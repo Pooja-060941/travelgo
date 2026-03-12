@@ -22,7 +22,7 @@ sns = session_boto.client('sns')
 
 users_table = dynamodb.Table('travel_users')
 bookings_table = dynamodb.Table('booking_table')
-SNS_TOPIC_ARN = "arn:aws:sns:us-east-1:545009839820:TravelGoNotifications"
+SNS_TOPIC_ARN = "arn:aws:sns:us-east-1:051826719491:TravelGoNotifications"
 
 # ---------------- STATIC DATA ----------------
 bus_data = [
@@ -192,7 +192,8 @@ def logout():
 
 if __name__ == '__main__':
     # Running on 0.0.0.0 for EC2 access, but debug is OFF for safety
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=80, debug=True)
+
 
 
 
